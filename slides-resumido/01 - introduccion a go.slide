@@ -405,6 +405,35 @@ Una estructura puede tener a otra embebida, y poseer todas sus cualidades
 
 .play -edit embedding.go /START /,/END /
 
+* Testing
+
+Un test tiene que estar en un archivo cuyo nombre finalice en ___test.go_ (i.e.: auto_test.go)
+
+En general el package también finaliza con ___test_
+
+Un test debe empezar con la palabra _Test_ y debe recibir por parámetro un puntero a testing.T
+
+.code testing.go
+
+* Testing un poco más bonito
+
+Con el framework default de testing hay que hacer muchas cosas a mano.
+Testify al rescate [[https://github.com/stretchr/testify]]
+
+	assert.Equal(t, cilindrosEsperados, cilindrosObtenidos, "No se obtuvo la cantidad esperada")
+	assert.NotNil(t, auto, "Esperaba que el auto no sea nulo")
+	assert.Contains(t, lista, unElemento, "No se encontró el elemento en la lista")
+
+.image https://raw.githubusercontent.com/ashleymcnamara/gophers/master/BATMAN_GOPHER.png 350 _
+
+* Hablemos de dependencias
+
+- Dependencias globales --> go get
+- Dependencias locales --> vendoring (govendor, dep, y otras)
+- Módulos, la nueva opción
+
+.image https://raw.githubusercontent.com/ashleymcnamara/gophers/master/DEATH_METAL_GOPHER.png 400 _
+
 * Hilos y GO
 
 La primera regla de la concurrencia: no usen concurrencia
