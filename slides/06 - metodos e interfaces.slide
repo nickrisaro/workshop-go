@@ -1,0 +1,136 @@
+Métodos e interfaces
+
+Santiago Nicolás Risaro Sesar
+@NickRisaro
+Desarrollador GO en Grupo Esfera
+@grupoesfera
+
+* Tipos y métodos
+
+- En GO no tenemos clases
+- Si queremos agrupar datos y funciones podemos utilizar tipos
+- Una función asociada a un tipo es un método, en este contexto al tipo lo llamamos `receiver`
+
+	type Vertice struct {
+		X, Y float64
+	}
+
+	func (vertice Vertice) Abs() float64 {
+		return math.Sqrt(vertice.X*vertice.X + vertice.Y*vertice.Y)
+	}
+
+- Invocamos un método con .
+
+	v := Vertice{3, 4}
+	fmt.Println(v.Abs())
+
+* Tipos y métodos
+
+Un método no siempre está asociado a una estructura
+
+	type Flotante float64
+
+	func (f Flotante) Abs() float64 {
+		if f < 0 {
+			return float64(-f)
+		}
+		return float64(f)
+	}
+
+
+* Pointer receivers
+
+Si queremos que un método modifique los valores de su `receiver` usamos punteros
+
+.play -edit pointer-receivers.go /START /,/END /
+
+: Sacar el * del receiver y mostrar que no se modifica el vértice
+: Comentar que en general siempre se usan pointer receivers
+
+* Pointer receivers
+
+No necesito un puntero para llamar a un método definido con un pointer receiver
+
+	var v Vertice
+	v.Agrandar(5)  // OK
+	v.Abs()        // OK
+	p := &v
+	p.Abs()        // OK
+	p.Agrandar(10) // OK
+
+.image https://raw.githubusercontent.com/ashleymcnamara/gophers/master/NERDY.png 300 _
+
+: Usar un pointer receiver es más eficiente ya que no se realiza una copia de la estructura
+: No deberían mezclarse métodos con pointer receivers y métodos con value receivers
+
+* Interfaces
+
+Una `interface` es un conjunto de firmas de métodos
+
+El paquete `fmt` define la `interface` Stringer, los tipos que la implementan se pueden convertir a string
+
+	type Stringer interface {
+	    String() string
+	}
+
+* Interfaces
+
+Si camina como pato, nada como pato y hace cuak como un pato... es una implementación de la interfaz pato
+
+.image https://s3.pixers.pics/pixers/700/FO/72/61/31/27/700_FO72613127_eedd2df018d37a6880875a410a204a11.jpg 400 _
+
+: Las interfaces, en GO, se implementan implícitamente
+
+* Interfaces
+
+Si quiero hacer referencia a cualquier tipo utilizo la interfaz vacía
+
+	var i interface{}
+
+Si quiero saber si una variable es de un tipo determinado uso type assertions
+
+	var i interface{} = "hello"
+
+	s, ok := i.(string)
+	fmt.Println(s, ok)
+
+	f := i.(float64) // panic
+	fmt.Println(f)	
+
+* Type switch
+
+	func evaluarTipo(i interface{}) {
+		switch v := i.(type) {
+		case int:
+			fmt.Println("Es un entero")
+		case string:
+			fmt.Println("Es un string")
+		default:
+			fmt.Println("No es entero ni string")
+		}
+	}
+
+* Polimorfismo
+
+.play -edit polimorfismo.go  /START /,/END /
+
+: Cuando usamos interfaces estamos usando punteros a los tipos, no podemos hacer *Animal porque es un puntero a un puntero
+: Mostrar que si sacamos el & de gato deja de compilar, porque el struct Gato no implementa la interfaz, pero el puntero a struct gato si
+
+* Estructuras embebidas
+
+En GO no hay herencia, pero tenemos composición++
+Una estructura puede tener a otra embebida, y poseer todas sus cualidades
+
+.play -edit embedding.go /START /,/END /
+
+* La interface error
+
+Si queremos hacer nuestro propio `error` tenemos que implementar la interface `error`
+
+	type error interface {
+	    Error() string
+	}
+
+.image https://raw.githubusercontent.com/ashleymcnamara/gophers/master/Facepalm_Picard_Gopher.png 350 _
+

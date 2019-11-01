@@ -1,0 +1,124 @@
+Conceptos básicos de Golang
+Paquetes, variables, funciones
+
+Santiago Nicolás Risaro Sesar
+@NickRisaro
+Desarrollador GO en Grupo Esfera
+@grupoesfera
+
+
+* Paquetes e imports
+
+	package main
+
+	import (
+		"fmt"
+		"math/rand"
+	)
+
+	func main() {
+		fmt.Println("Mi número favorito es", rand.Intn(10))
+	}
+
+- Todos los archivos de una carpeta deben pertenecer al mismo paquete
+- El nombre del paquete no necesariamente debe coincidir con el nombre de la carpeta
+
+: Todos los fuentes deben tener una declaración package
+: La última parte del path es el nombre del paquete math/rand -> rand
+: No compila si hay imports no usados (salvo que pongas un _ [import _ "fmt"])
+: Múltiples imports usando paréntesis
+
+* Valores exportados
+
+- Por defecto una variable global o función se define para todo un paquete (no para un fuente)
+- Si quiero usar una variable o función fuera del paquete en el que fue definida su nombre debe empezar con mayúsculas
+- Al importar un paquete sólo podés acceder a sus valores exportados
+
+* Variables y constantes
+
+.play variables.go
+
+: Tipo al final
+: Explicar valores por default (zero values) al ejecutar el código
+
+* Inicialización de variables
+
+.play -edit inicializacion.go
+
+: Explicar que i, j son variables globales. Si se redeclaran dentro de una función tiene precedencia la definición más local. Definir var i = true dentro de main.
+: Mostrar que no funciona: var i, j int = 1
+: Explicar inferencia de tipos (con y sin usar var)
+
+* Tipos básicos
+
+- bool
+- string
+- int  int8  int16  int32  int64
+- uint uint8 uint16 uint32 uint64 uintptr
+- byte // alias de uint8
+- float32 float64
+- complex64 complex128
+
+: The int, uint, and uintptr types are usually 32 bits wide on 32-bit systems and 64 bits wide on 64-bit systems. When you need an integer value you should use int unless you have a specific reason to use a sized or unsigned integer type. 
+: Unicode standard usa el término "code point" para referirse a un valor simple (caracter)
+: Para GO "Code point" == rune == int32
+
+* Funciones
+
+.play -edit funciones.go
+
+: Explicar que pueden recibir cero o más parámetros
+: Explicar que los tipos van al final para que se lea mejor de izquierda a derecha
+: Mostrar que (x, y int) es válido
+
+
+* Funciones con múltiples valores de retorno
+
+.play -edit multiple-retorno.go
+
+: Mostrar que no necesariamente son todos los retornos del mismo tipo
+: Mostrar que sin los paréntesis no compila
+
+* Valores de retorno con nombre
+
+.play -edit retorno-con-nombre.go
+
+: Mostrar que (primera string, string) no compila
+: Mostrar que return primera, segunda es válido
+: Aclarar que el return sin variables se llama "naked return"
+
+* Identificador vacío
+
+Si no nos interesa alguno de los valores que retorna una función, se usa el underscore para ignorarlo
+
+	_, b := intercambiar("mercado", "libre")
+
+.image images/blank_identifier.png 400 _
+
+: Esto tambien sirve para imports
+
+* Errores
+
+En GO no existen las excepciones
+
+	i, err := strconv.Atoi("42")
+
+	if err != nil {
+	    fmt.Printf("no se puede convertir el numero: %v\n", err)
+	    return
+	}
+
+Para crear un error usamos `fmt.Error()` o `errors.New()`
+
+    if divisor == 0 {
+        return fmt.Errorf("no se puede usar %v como divisor", divisor)
+    }
+
+* Conversiones de tipos
+
+	var i int = 4
+
+	var f float64 = float64(i)
+
+.image https://raw.githubusercontent.com/ashleymcnamara/gophers/master/GO_BUG.png 400 _
+

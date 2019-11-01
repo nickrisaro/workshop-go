@@ -1,0 +1,39 @@
+Estructuras y punteros
+
+Santiago Nicolás Risaro Sesar
+@NickRisaro
+Desarrollador GO en Grupo Esfera
+@grupoesfera
+
+
+* Punteros
+
+Go tiene punteros, pero no es dificil usarlos
+
+- Un puntero contiene la dirección de memoria de una variable
+- `*T` es un puntero a una variable del tipo `T`, su valor por default es `nil`
+- El operador `&` nos da la dirección de una variable
+- El operador `*` nos permite acceder al valor apuntado por un puntero
+
+.play -edit punteros.go
+
+: Aclarar que no se pide memoria ni hay que liberarla, de eso se encarga el garbage collector
+: Aclarar que no hay aritmética de punteros
+
+* Estructuras
+
+- Una estructura es un conjunto de valores
+- Los campos de la estructura se acceden con un `.`
+
+.play -edit estructura.go
+
+: Mostrar que Vertice{} crea un vértice con coordenadas 0
+
+* Punteros a estructuras
+
+.play -edit punteros-a-estructuras.go
+
+- Se recomienda utilizar punteros a estructuras
+
+: Explicar que si se no se recibe/devuelve un puntero a la estructura no se pueden modificar los valores de la estructura
+

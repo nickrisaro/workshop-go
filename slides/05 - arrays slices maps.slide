@@ -1,0 +1,80 @@
+Arrays, slices, maps
+
+Santiago Nicolás Risaro Sesar
+@NickRisaro
+Desarrollador GO en Grupo Esfera
+@grupoesfera
+
+
+* Arrays
+
+- El tipo [n]T es un array de n valores de tipo T
+- La longitud de un array es parte de su tipo, por eso, no pueden redimensionarse
+
+	var enteros [10]int
+
+.play -edit arrays.go
+
+: Mostrar [5]int{2, 3, 5, 7, 11, 13} y [7]int{2, 3, 5, 7, 11, 13}
+
+
+* Slices
+
+- El tipo []T es un slice con elementos de tipo T
+- Un slice se redimensiona dinámicamente. En la práctica son más comunes que los arrays
+- El zero value de un `slice` es `nil`
+
+.play -edit slices.go /START /,/END /
+
+: Aclarar que make devuelve un puntero a un array
+
+* Slices
+
+Un slice es un puntero a un array, modificar un slice implica modificar el array y viceversa
+
+.play -edit slices4.go
+
+* Longitud y capacidad de un slice
+
+- La longitud de un slice es el número de elementos que contiene
+- La capacidad de un slice es la cantidad de elementos que contiene el array subyacente
+
+.play -edit slices2.go /START /,/END /
+
+* Agregar elementos a un slice
+
+.play -edit slices3.go
+
+* Recorriendo un slice
+
+.play -edit range.go
+
+* Maps
+
+.play -edit maps.go
+
+: Comentar linea de make y ver que explota
+: Aclarar que tanto la clave como el valor pueden ser estructuras
+
+* Map literals
+
+.play -edit maps2.go
+
+: Aclarar que es opcional poner Vertice
+
+* Operaciones sobre maps
+
+Se pueden eliminar elementos de un mapa con `delete`
+
+	delete(mapa, clave) // si la clave no existe, la sentencia no falla y el mapa no se modifica
+
+Se puede verificar si existe un elemento en un mapa
+
+	elemento, existe = mapa[clave]
+
+.image https://raw.githubusercontent.com/ashleymcnamara/gophers/master/GOPHER%20RIDING%20REX.png 300 _
+
+* Recorriendo un map
+
+.play -edit maps3.go
+

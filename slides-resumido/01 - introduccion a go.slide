@@ -1,0 +1,484 @@
+Introducción a Golang
+Conociendo el lenguaje
+
+Santiago Nicolás Risaro Sesar
+@NickRisaro
+Desarrollador GO en Grupo Esfera
+@grupoesfera
+
+
+* ¿Quiénes crearon GO?
+
+- Robert Griesemer, Ken Thompson y Rob Pike iniciaron el proyecto a fines de 2007
+- A mediados de 2008 se finaliza el diseño y se termina la primera implementación
+
+
+.image https://raw.githubusercontent.com/ashleymcnamara/gophers/master/GOPHER%20ACADEMY.png 350 _
+
+* Filosofía y motivaciones
+
+- Los sistemas cambiaron, los lenguajes no
+
+: CAMBIO: No new major systems language in a decade. But much has changed:
+: client/server focus, the rise of multi-core CPUs
+: Major systems languages were not designed with all these factors in mind. 
+
+- Velocidad de desarrollo
+
+: VELOCIDAD DE DESARROLLO: It takes too long to build software. The tools are slow and are getting slower. 
+: Machines have stopped getting faster. Yet software still grows and grows. 
+: If we stay as we are, before long software construction will be unbearably slow.
+
+- Repensar el sistemas de tipos
+
+: TIPOS: You can be productive or safe, not both. En GO se busca el intermedio.
+
+- Agregar funcionalidad al lenguaje no lo hace mejor, sólo más grande
+
+: AGREGAR FUNC: Go does not try to be like the other languages. Go does not compete on features. As of Go 1, the language is fixed. 
+
+* ¿Por qué? Go fast!
+"Make programming fun again" (Rob Pike)
+
+.image https://imgs.xkcd.com/comics/compiling.png 500 _
+
+* Características principales
+
+- Lenguaje procedural pero con funciones, métodos, interfaces y concurrencia
+- La eficiencia de un lenguaje estáticamente tipado con la facilidad de un lenguaje dinámico
+- Buen soporte para concurrencia y comunicación entre procesos
+- Garbage collector eficiente y sin latencia
+- Alta velocidad de compilación y ejecución
+- Legibilidad y simplicidad
+
+: No es orientado a objetos pero tiene el concepto de método y polimorfismo
+: LEGIBILIDAD: If a language has too many features, you waste time choosing which ones to use. 
+: Features add complexity. We want simplicity. Features hurt readability. We want readability. 
+
+.image https://raw.githubusercontent.com/ashleymcnamara/gophers/master/This_is_Fine_Gopher.png 250 _
+
+* Entorno de desarrollo
+
+- Descargar GO de [[https://golang.org/dl/]]
+- Descomprimirlo en `/usr/local`
+- Editar `.profile`
+
+	# Define GOROOT
+	export GOROOT="/usr/local/go"
+
+	# add GOROOT to the PATH
+	PATH="$GOROOT/bin:$PATH"
+
+	# declare GOPATH
+	export GOPATH="$HOME/go"
+
+	# add GOPATH to the PATH
+	PATH="$GOPATH/bin:$PATH"
+- Crear la carpeta `$GOPATH/src`
+
+.image images/go-version.png 55 _
+.caption Resultado de ejecutar go version
+
+: Las variables GOROOT Y GOPATH son opcionales
+: GOROOT: Ubicación de los binarios de GO
+: GOPATH: Ubicación de los fuentes, dependencias y código compilado
+: Después de editar el .profile reiniciar la sesión
+
+* IDEs
+
+.image https://juncotic.com/wp-content/uploads/2016/09/2000px-Icon-Vim.svg_-768x768.png 150 _ 
+.image https://foro.vozidea.com/f-uploads/2017/12/visual-studio-code.png 150 _ 
+.image https://images.g2crowd.com/uploads/product/image/large_detail/large_detail_1513169944/goland.png 150 _
+
+* Primer programa
+
+.play -edit hola-mundo.go
+
+* Probar, compilar, ejecutar, instalar
+
+	# Compilar y ejecutar las pruebas que están en el directorio actual
+	go test
+
+	# Compilar <fuente>.go (El ejecutable queda en la carpeta en la que está <fuente>.go)
+	go build <fuente>.go
+
+	# Compilar y ejecutar <fuente>.go
+	go run <fuente>.go  
+
+	# Compilar e instalar el paquete (El ejecutable queda en $GOPATH/bin)
+	go install
+
+.image https://raw.githubusercontent.com/ashleymcnamara/gophers/master/MovingGopher.png 250 _
+
+: Ante la duda go help <comando>
+
+* Paquetes e imports
+
+	package main
+
+	import (
+		"fmt"
+		"math/rand"
+	)
+
+	func main() {
+		fmt.Println("Mi número favorito es", rand.Intn(10))
+	}
+
+- Todos los archivos de una carpeta deben pertenecer al mismo paquete
+- El nombre del paquete no necesariamente debe coincidir con el nombre de la carpeta
+
+: Todos los fuentes deben tener una declaración package
+: La última parte del path es el nombre del paquete math/rand -> rand
+: No compila si hay imports no usados (salvo que pongas un _ [import _ "fmt"])
+: Múltiples imports usando paréntesis
+
+* Valores exportados
+
+- Por defecto una variable global o función se define para todo un paquete (no para un fuente)
+- Si quiero usar una variable o función fuera del paquete en el que fue definida su nombre debe empezar con mayúsculas
+- Al importar un paquete sólo podés acceder a sus valores exportados
+
+* Inicialización de variables
+
+.play -edit inicializacion.go
+
+: Explicar que i, j son variables globales. Si se redeclaran dentro de una función tiene precedencia la definición más local. Definir var i = true dentro de main.
+: Mostrar que no funciona: var i, j int = 1
+: Explicar inferencia de tipos (con y sin usar var)
+
+* Tipos básicos
+
+- bool
+- string
+- int  int8  int16  int32  int64
+- uint uint8 uint16 uint32 uint64 uintptr
+- byte // alias de uint8
+- float32 float64
+- complex64 complex128
+
+: The int, uint, and uintptr types are usually 32 bits wide on 32-bit systems and 64 bits wide on 64-bit systems. When you need an integer value you should use int unless you have a specific reason to use a sized or unsigned integer type. 
+: Unicode standard usa el término "code point" para referirse a un valor simple (caracter)
+: Para GO "Code point" == rune == int32
+
+* Funciones
+
+.play -edit funciones.go
+
+: Explicar que pueden recibir cero o más parámetros
+: Explicar que los tipos van al final para que se lea mejor de izquierda a derecha
+: Mostrar que (x, y int) es válido
+
+
+* Funciones con múltiples valores de retorno
+
+.play -edit multiple-retorno.go
+
+: Mostrar que no necesariamente son todos los retornos del mismo tipo
+: Mostrar que sin los paréntesis no compila
+
+* Identificador vacío
+
+Si no nos interesa alguno de los valores que retorna una función, se usa el underscore para ignorarlo
+
+	_, b := intercambiar("Grupo", "Esfera")
+
+.image images/blank_identifier.png 400 _
+
+: Esto tambien sirve para imports
+
+* Errores
+
+En GO no existen las excepciones
+
+	i, err := strconv.Atoi("42")
+
+	if err != nil {
+	    fmt.Printf("no se puede convertir el numero: %v\n", err)
+	    return
+	}
+
+Para crear un error usamos `fmt.Error()` o `errors.New()`
+
+    if divisor == 0 {
+        return fmt.Errorf("no se puede usar %v como divisor", divisor)
+    }
+
+* If else
+
+	if x < 0 {
+		return x + 1
+	} else {
+		return x - 1	
+	}
+
+El if puede comenzar con una sentencia corta que se ejecuta antes de la condición
+
+	if v := math.Pow(x, n); v < lim {
+		return v
+	}
+
+* Switch
+
+	switch os := runtime.GOOS; os {
+	case "darwin":
+		fmt.Println("OS X.")
+	case "linux":
+		fmt.Println("Linux.")
+	default:
+		fmt.Printf("%s.", os)
+	}
+
+: Remarcar que Go ya provee el break automáticamente. Los cases no necesitan ser constantes, ni enteros necesariamente.
+
+* For
+
+	for i := 0; i < 10; i++ {
+		sum += i
+	}
+
+La inicialización y el incremento son opcionales
+
+	for ; sum < 1000; {
+		sum += sum
+	}
+.image https://raw.githubusercontent.com/ashleymcnamara/gophers/master/GOPHER_ROCKS.png 250 _
+
+* While
+
+	for sum < 1000 {
+		sum += sum
+	}
+
+Ciclo infinito
+
+	for {
+	}
+
+* Arrays
+
+- El tipo [n]T es un array de n valores de tipo T
+- La longitud de un array es parte de su tipo, por eso, no pueden redimensionarse
+
+	var enteros [10]int
+
+.play -edit arrays.go
+
+: Mostrar [5]int{2, 3, 5, 7, 11, 13} y [7]int{2, 3, 5, 7, 11, 13}
+
+* Slices
+
+- El tipo []T es un slice con elementos de tipo T
+- Un slice se redimensiona dinámicamente. En la práctica son más comunes que los arrays
+- El zero value de un `slice` es `nil`
+
+.play -edit slices.go /START /,/END /
+
+: Aclarar que make devuelve un puntero a un array
+
+* Slices
+
+Un slice es un puntero a un array, modificar un slice implica modificar el array y viceversa
+
+.play -edit slices4.go
+
+* Agregar elementos a un slice
+
+.play -edit slices3.go
+
+* Recorriendo un slice
+
+.play -edit range.go
+
+* Maps
+
+.play -edit maps.go
+
+: Comentar linea de make y ver que explota
+: Aclarar que tanto la clave como el valor pueden ser estructuras
+
+* Operaciones sobre maps
+
+Se pueden eliminar elementos de un mapa con `delete`
+
+	delete(mapa, clave) // si la clave no existe, la sentencia no falla y el mapa no se modifica
+
+Se puede verificar si existe un elemento en un mapa
+
+	elemento, existe = mapa[clave]
+
+.image https://raw.githubusercontent.com/ashleymcnamara/gophers/master/GOPHER%20RIDING%20REX.png 300 _
+
+* Recorriendo un map
+
+.play -edit maps3.go
+
+* Tipos y métodos
+
+- En GO no tenemos clases
+- Si queremos agrupar datos y funciones podemos utilizar tipos
+- Una función asociada a un tipo es un método, en este contexto al tipo lo llamamos `receiver`
+
+	type Vertice struct {
+		X, Y float64
+	}
+
+	func (vertice Vertice) Abs() float64 {
+		return math.Sqrt(vertice.X*vertice.X + vertice.Y*vertice.Y)
+	}
+
+- Invocamos un método con .
+
+	v := Vertice{3, 4}
+	fmt.Println(v.Abs())
+
+* Pointer receivers
+
+Si queremos que un método modifique los valores de su `receiver` usamos punteros
+
+.play -edit pointer-receivers.go /START /,/END /
+
+: Sacar el * del receiver y mostrar que no se modifica el vértice
+: Comentar que en general siempre se usan pointer receivers
+
+* Pointer receivers
+
+No necesito un puntero para llamar a un método definido con un pointer receiver
+
+	var v Vertice
+	v.Agrandar(5)  // OK
+	v.Abs()        // OK
+	p := &v
+	p.Abs()        // OK
+	p.Agrandar(10) // OK
+
+.image https://raw.githubusercontent.com/ashleymcnamara/gophers/master/NERDY.png 300 _
+
+: Usar un pointer receiver es más eficiente ya que no se realiza una copia de la estructura
+: No deberían mezclarse métodos con pointer receivers y métodos con value receivers
+
+* Interfaces
+
+Una `interface` es un conjunto de firmas de métodos
+
+El paquete `fmt` define la `interface` Stringer, los tipos que la implementan se pueden convertir a string
+
+	type Stringer interface {
+	    String() string
+	}
+
+* Interfaces
+
+Si camina como pato, nada como pato y hace cuak como un pato... es una implementación de la interfaz pato
+
+.image https://s3.pixers.pics/pixers/700/FO/72/61/31/27/700_FO72613127_eedd2df018d37a6880875a410a204a11.jpg 400 _
+
+: Las interfaces, en GO, se implementan implícitamente
+
+* Interfaces
+
+Si quiero hacer referencia a cualquier tipo utilizo la interfaz vacía
+
+	var i interface{}
+
+Si quiero saber si una variable es de un tipo determinado uso type assertions
+
+	var i interface{} = "hello"
+
+	s, ok := i.(string)
+	fmt.Println(s, ok)
+
+	f := i.(float64) // panic
+	fmt.Println(f)	
+
+* Polimorfismo
+
+.play -edit polimorfismo.go  /START /,/END /
+
+: Cuando usamos interfaces estamos usando punteros a los tipos, no podemos hacer *Animal porque es un puntero a un puntero
+: Mostrar que si sacamos el & de gato deja de compilar, porque el struct Gato no implementa la interfaz, pero el puntero a struct gato si
+
+* Estructuras embebidas
+
+En GO no hay herencia, pero tenemos composición++
+Una estructura puede tener a otra embebida, y poseer todas sus cualidades
+
+.play -edit embedding.go /START /,/END /
+
+* Hilos y GO
+
+La primera regla de la concurrencia: no usen concurrencia
+
+Concurrencia no es paralelismo (Si tenés un solo procesador tu programa puede tener concurrencia pero no paralelismo)
+
+.image https://images-na.ssl-images-amazon.com/images/G/01/digital/video/hero/Movies/Top250/B001H1UQRI_fightclub_UXFX1._RI_SX940_.jpg 400 _
+
+* GO Routines
+
+Una `goroutine` es un hilo liviano administrado por GO
+
+    go f(x, y, z)
+
+La sentencia `go` inicia una nueva rutina que corre concurrentemente con la ejecución principal
+
+NO ES UN HILO
+
+El runtime se encarga de crear y administrar los hilos necesarios para la ejecución de las rutinas.
+
+: Aclarar mas sobre hilos y rutinas, creacion just in time, "hilo barato"
+: Varias gorutinas pueden ejecutarse en el mismo hilo, es el runtime quien decide cuando crear un nuevo hilo y que rutinas se ejecutan  en él
+
+Las rutinas de go corren en el mismo espacio de direcciones, por lo que el acceso a recursos compartidos debe ser sincronizado
+
+* GO Routines
+
+.play -edit goroutine.go
+
+: Cambiar la variable mensaje2 por una asignación a la variable mensaje y mostrar que se imprime siempre "hola" para demostrar que comparten memoria
+
+* Channels
+
+Son conductos tipados de comunicación entre rutinas
+
+Se envía o recibe información por un channel con el operador de canal `<-`
+
+    ch := make(chan int)
+
+    ch <- v    // Envía `v` al canal `ch`
+    v := <-ch  // Recibe del canal `ch` y asigna valor en `v`
+
+Los canales son sincronizados: tanto el escribir como leer mensajes bloquean la ejecución de la rutina hasta que se realice la operación opuesta.
+
+*Ambas* *partes* *deben* *estar* *listas* *para* *continuar* *con* *la* *ejecución*
+
+* Channels
+
+.play -edit channels.go /START /,/END /
+
+: La gorutina se ejecuta infinitamente, desde el main sólo leemos 5 mensajes. La gorutina se "muere" cuando finaliza el main
+
+* Channels y buffers
+
+Los canales pueden tener un buffer de mensajes. Tener un buffer evita que la escritura bloquee la ejecución
+
+Cuando el buffer se llena, la ejecución bloquea al intentar agregar algo al canal
+
+.play -edit channels2.go /START /,/END /
+
+: Jugar con las lineas comentadas y el tamaño del canal
+: Por defecto, el tamaño del buffer es 1
+
+* Range y Close
+
+Para leer infinitamente de un canal se utiliza el operador `range`
+
+    for v := range ch
+
+Los canales se pueden cerrar con la función `close(ch)`. Si el canal es cerrado, el `range` finaliza
+
+Quien lee de un canal sabe que fue cerrado utilizando la forma
+
+    v, ok := <-ch
+
+No se puede leer de un canal cerrado.
+

@@ -1,0 +1,122 @@
+Concurrencia
+
+Santiago Nicolás Risaro Sesar
+@NickRisaro
+Desarrollador GO en Grupo Esfera
+@grupoesfera
+
+* Hilos y GO
+
+La primera regla de la concurrencia: no usen concurrencia
+
+Concurrencia no es paralelismo (Si tenés un solo procesador tu programa puede tener concurrencia pero no paralelismo)
+
+.image https://images-na.ssl-images-amazon.com/images/G/01/digital/video/hero/Movies/Top250/B001H1UQRI_fightclub_UXFX1._RI_SX940_.jpg 400 _
+
+* GO Routines
+
+Una `goroutine` es un hilo liviano administrado por GO
+
+    go f(x, y, z)
+
+La sentencia `go` inicia una nueva rutina que corre concurrentemente con la ejecución principal
+
+NO ES UN HILO
+
+El runtime se encarga de crear y administrar los hilos necesarios para la ejecución de las rutinas.
+
+: Aclarar mas sobre hilos y rutinas, creacion just in time, "hilo barato"
+: Varias gorutinas pueden ejecutarse en el mismo hilo, es el runtime quien decide cuando crear un nuevo hilo y que rutinas se ejecutan  en él
+
+Las rutinas de go corren en el mismo espacio de direcciones, por lo que el acceso a recursos compartidos debe ser sincronizado
+
+
+* GO Routines
+
+.play -edit goroutine.go
+
+: Cambiar la variable mensaje2 por una asignación a la variable mensaje y mostrar que se imprime siempre "hola" para demostrar que comparten memoria
+
+* Channels
+
+Son conductos tipados de comunicación entre rutinas
+
+Se envía o recibe información por un channel con el operador de canal `<-`
+
+    ch := make(chan int)
+
+    ch <- v    // Envía `v` al canal `ch`
+    v := <-ch  // Recibe del canal `ch` y asigna valor en `v`
+
+Los canales son sincronizados: tanto el escribir como leer mensajes bloquean la ejecución de la rutina hasta que se realice la operación opuesta.
+
+*Ambas* *partes* *deben* *estar* *listas* *para* *continuar* *con* *la* *ejecución*
+
+* Channels
+
+.play -edit channels.go /START /,/END /
+
+: La gorutina se ejecuta infinitamente, desde el main sólo leemos 5 mensajes. La gorutina se "muere" cuando finaliza el main
+
+* Channels y buffers
+
+Los canales pueden tener un buffer de mensajes. Tener un buffer evita que la escritura bloquee la ejecución
+
+Cuando el buffer se llena, la ejecución bloquea al intentar agregar algo al canal
+
+.play -edit channels2.go /START /,/END /
+
+: Jugar con las lineas comentadas y el tamaño del canal
+: Por defecto, el tamaño del buffer es 1
+
+* Range y Close
+
+Para leer infinitamente de un canal se utiliza el operador `range`
+
+    for v := range ch
+
+Los canales se pueden cerrar con la función `close(ch)`. Si el canal es cerrado, el `range` finaliza
+
+Quien lee de un canal sabe que fue cerrado utilizando la forma
+
+    v, ok := <-ch
+
+No se puede leer de un canal cerrado.
+
+* Select
+
+Permite que una rutina reciba mensajes de multiples canales. No asigna prioridad entre canales; si hay mensajes en los buffers el select elige uno al azar
+
+    func fibonacci(c, quit chan int) {
+        x, y := 0, 1
+        for {
+            select {
+            case c <- x:
+                x, y = y, x+y
+            case <-quit:
+                fmt.Println("quit")
+                return
+            }
+        }
+    }
+
+: Canal de "quit" es patron estandar
+: Bloquea en el select hasta que haya un mensaje disponible
+: Default es elegido cuando no hay mensajes disponibles en los canales, no bloquea
+
+* Patron: Fan In
+
+.code channels3.go /START1 /,/END1 /
+.play channels3.go /START2 /,/END2 /
+
+: Los mensajes siempre salen intercalados y nos podemos perder de algunos si algun canal deja de recibir
+
+* Patron: Fan In
+
+.image https://talks.golang.org/2012/concurrency/images/gophermegaphones.jpg
+
+* Patron: Fan In
+
+.code channels4.go /START1 /,/END1 /
+.play channels4.go /START3 /,/END3 /
+

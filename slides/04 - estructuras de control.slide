@@ -1,0 +1,106 @@
+Estructuras de control
+
+Santiago Nicolás Risaro Sesar
+@NickRisaro
+Desarrollador GO en Grupo Esfera
+@grupoesfera
+
+* If else
+
+	if x < 0 {
+		return x + 1
+	} else {
+		return x - 1	
+	}
+
+El if puede comenzar con una sentencia corta que se ejecuta antes de la condición
+
+	if v := math.Pow(x, n); v < lim {
+		return v
+	}
+
+* Switch
+
+	switch os := runtime.GOOS; os {
+	case "darwin":
+		fmt.Println("OS X.")
+	case "linux":
+		fmt.Println("Linux.")
+	default:
+		fmt.Printf("%s.", os)
+	}
+
+También se puede hacer un swith sin condición
+
+	switch {
+	case t.Hour() < 12:
+		fmt.Println("Buenos días")
+	case t.Hour() < 17:
+		fmt.Println("Buenas tardes")
+	default:
+		fmt.Println("Buenas noches")
+	}
+
+: Remarcar que Go ya provee el break automáticamente. Los cases no necesitan ser constantes, ni enteros necesariamente.
+
+* For
+
+	for i := 0; i < 10; i++ {
+		sum += i
+	}
+
+La inicialización y el incremento son opcionales
+
+	for ; sum < 1000; {
+		sum += sum
+	}
+.image https://raw.githubusercontent.com/ashleymcnamara/gophers/master/GOPHER_ROCKS.png 250 _
+
+* While
+
+	for sum < 1000 {
+		sum += sum
+	}
+
+Ciclo infinito
+
+	for {
+	}
+
+* Defer
+
+Difiere la ejecución de una función hasta que termina la ejecución de la función que la contiene
+
+.play -edit defer.go
+
+* Defer
+
+Los argumentos de la llamada diferida se evalúan inmediatamente, pero el llamado a la función no se ejecuta hasta que la función que la contiene retorne
+
+.play -edit defer2.go
+
+* Defer
+
+Las llamadas diferidas se guardan en una pila. Cuando una función termina, sus llamadas diferidas se ejecutan en orden LIFO (último en entrar, primero en salir).
+
+.play -edit defer3.go
+
+* Panic
+
+`panic` es una función de GO que permite interrumpir el flujo de una aplicación de manera repentina
+La podemos invocar a mano o ser invocada por GO en caso de un error de runtime (ej: nil reference)
+
+* Panic y defers
+
+`panic` interrumpe la ejecución de la función donde es invocada, subiendo por el stack de ejecución hasta detener el proceso
+En cada nivel del stack, se ejecutan las funciones defered antes de seguir subiendo
+
+* Recover
+
+`recover` es una función de GO que permite interrumpir un `panic`. La misma solo funciona si es invocada desde un defer, de lo contrario devuelve nil
+
+.image images/dont-panic.jpg 400 _
+
+* Panic, defer y recover
+
+.play panic-recover.go /START /,/END /
